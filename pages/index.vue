@@ -140,15 +140,20 @@ import * as Transactions from '../scripts/transactions.js'
       }
     },
     async mounted() {
-      // Creates a new default ledger instance
-      console.log(this)
-      this.ledger = new WavesLedger(this.ledgerOptions)
-      // Tries to connect to the device and fetches the first wallet
-      const userInfo = await this.ledger.getUserDataById(this.lto_address_id)
-      if (userInfo.address) {
-        this.lto_address = userInfo.address;
-        this.lto_public_key = userInfo.publicKey;
+      // Creates a new Ledger instance
+      try {
+        this.ledger = new WavesLedger(this.ledgerOptions)
+        // Tries to connect to the device and fetches the first wallet
+        const userInfo = await this.ledger.getUserDataById(this.lto_address_id)
+        if (userInfo.address) {
+          this.lto_address = userInfo.address;
+          this.lto_public_key = userInfo.publicKey;
+        }
+      } catch (error) {
+        // TODO: show an error message
+        console.log(error.message)
       }
+      
     },
     computed: {
       is_valid_address: function () {
