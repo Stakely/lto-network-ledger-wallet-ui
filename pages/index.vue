@@ -109,6 +109,10 @@
 </template>
 
 <script>
+import TransportU2F from '@ledgerhq/hw-transport-u2f';
+import {WavesLedger} from 'lto-ledger-js-unofficial-test';
+import * as Transactions from '../scripts/transactions.js'
+
   export default {
     data () {
       return {
