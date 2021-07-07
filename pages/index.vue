@@ -118,6 +118,7 @@ import * as Transactions from '../scripts/transactions.js'
       return {
         mainnet_network: true,
         lto_address: null,
+        lto_public_key: null,
         lto_address_id: 0,
         lto_address_ids: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
         transaction_selected: 'Transfer',
@@ -127,7 +128,26 @@ import * as Transactions from '../scripts/transactions.js'
         lease_id: null,
         data: null,
         amount: null,
-        fee: null
+        fee: null,
+        ledger: null,
+        ledgerOptions: {
+          openTimeout: 3000,
+          listenTimeout: 250000,
+          exchangeTimeout: 250000,
+          networkCode: 76, // 76 mainnet - 84 tesnet
+          transport: TransportU2F
+        },
+      }
+    },
+    async mounted() {
+      // Creates a new default ledger instance
+      console.log(this)
+      this.ledger = new WavesLedger(this.ledgerOptions)
+      // Tries to connect to the device and fetches the first wallet
+      const userInfo = await this.ledger.getUserDataById(this.lto_address_id)
+      if (userInfo.address) {
+        this.lto_address = userInfo.address;
+        this.lto_public_key = userInfo.publicKey;
       }
     },
     computed: {
