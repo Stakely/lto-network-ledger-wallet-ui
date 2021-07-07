@@ -14,9 +14,23 @@
       </div>
     </v-main>
     <v-footer inset padless class="default-shadow default-color">
-      <div class="width-100">
+      <div class="width-100 my-8">
         <div class="wrapper px-4 extra-wrap white--text">
-          Made by Stakely Team
+          <v-row no-gutters class="mx-2">
+            <v-col cols="12" md="6" class="px-2">
+              <div class="d-flex align-center">
+                <v-icon small class="white--text" left>mdi-github</v-icon><a href="https://github.com/iicc1/lto-network-ledger-staking-ui" target="_blank" class="white--text mx-1"><strong>Fork us on GitHub</strong></a>
+              </div>
+            </v-col>
+            <v-col cols="12" md="6" class="px-2">
+              <div class="d-flex align-center">
+                <v-icon small class="white--text" left>mdi-telegram</v-icon>Do you need help? <a href="https://t.me/joinchat/BrVdbEUBdYOXu4N8mY9wEQ" target="_blank" class="white--text mx-1"><strong>Join LTO Network Tech chat</strong></a>
+              </div>
+              <div class="d-flex align-center">
+                <v-icon small class="white--text" left>mdi-notebook-edit-outline</v-icon>Made by <a href="https://stakely.io" target="_blank" class="white--text mx-1"><strong>Stakely.io</strong></a> Team
+              </div>
+            </v-col>
+          </v-row>
         </div>
       </div>
     </v-footer>
@@ -25,6 +39,9 @@
 
 <script>
   export default {
+    mounted: async function () {
+      console.log(this)
+    },
     data () {
       return {
       }
@@ -75,5 +92,17 @@
   .v-input__icon .v-icon {
     color: rgb(99, 123, 217)!important;
     caret-color: rgb(99, 123, 217);
+  }
+  a:link {
+    text-decoration: none;
+  }
+  a:visited {
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: none!important;
+  }
+  a:active {
+    text-decoration: none;
   }
 </style>
