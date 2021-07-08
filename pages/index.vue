@@ -1,62 +1,9 @@
 <template>
   <div class="py-4">
-    <div v-if="!lto_address">
+    <div class="position-relative">
       <v-row no-gutters class="mx-n2">
         <v-col cols="12" md="6" class="px-2 d-flex align-stretch">
-          <div class="white default-shadow rounded pa-4 width-100 position-relative">
-            <div>
-              <div class="section-title">TRANSFER</div>
-              <v-icon class="float-right icon-position">mdi-swap-horizontal</v-icon>
-            </div>
-            <div class="section-box rounded mt-2 pa-4 overflow-hidden d-flex align-center justify-space-between text--secondary">
-              The fastest way to send LTO Tokens using your Ledger Hardware.
-            </div>
-          </div>
-        </v-col>
-        <v-col cols="12" md="6" class="px-2 d-flex align-stretch mt-4 mt-md-0">
-          <div class="white default-shadow rounded pa-4 width-100 position-relative">
-            <div>
-              <div class="section-title">LEASE</div>
-              <v-icon class="float-right icon-position">mdi-vote-outline</v-icon>
-            </div>
-            <div class="section-box rounded mt-2 pa-4 overflow-hidden d-flex align-center justify-space-between text--secondary">
-              Delegate your voting power to help protect the network while earning rewards. When leasing, your tokens stay in your wallet.
-            </div>
-          </div>
-        </v-col>
-      </v-row>
-      <v-row no-gutters class="mx-n2">
-        <v-col cols="12" md="6" class="px-2 d-flex align-stretch mt-4">
-          <div class="white default-shadow rounded pa-4 width-100 position-relative">
-            <div>
-              <div class="section-title">ANCHOR</div>
-              <v-icon class="float-right icon-position">mdi-at</v-icon>
-            </div>
-            <div class="section-box rounded mt-2 pa-4 overflow-hidden d-flex align-center justify-space-between text--secondary">
-              Anchoring is a simple and cheap way to notarize documents or timestamp data on the blockchain making it tamper-proof.
-            </div>
-          </div>
-        </v-col>
-        <v-col cols="12" md="6" class="px-2 mt-4 d-flex align-stretch position-relative">
-          <div class="white default-shadow rounded pa-4 mt-4 mt-md-0 width-100">
-            <div class="" style="height: 100%;">
-              <div class="section-title width-100">CONNECT YOUR WALLET</div>
-              <div class="section-box rounded mt-2 pa-4 overflow-hidden d-flex align-center justify-space-between text--secondary">
-                <v-btn @click="tamanyo = 0;opacidad = 1;" depressed large block class="white--text mt-2 default-color">
-                  CONNECT USING LEDGER
-                  <v-progress-circular v-if="loading.sign_transaction" indeterminate color="white" :size="14" :width="2" class="ml-2"></v-progress-circular>
-                  <v-icon v-else right small class="white--text">mdi-arrow-right</v-icon>
-                </v-btn>
-              </div>
-            </div>
-          </div>
-        </v-col>
-      </v-row>
-    </div>
-    <div class="mt-4 position-relative" :style="'opacity:' + opacidad">
-      <v-row no-gutters class="mx-n2">
-        <v-col cols="12" md="6" class="px-2 d-flex align-stretch">
-          <div v-if="true" class="white default-shadow rounded pa-4 width-100">
+          <div v-if="false" class="white default-shadow rounded pa-4 width-100">
             <div class="overflow-hidden">
               <div class="section-title float-left">BALANCE</div>
               <div class="float-right d-flex align-center text--secondary text-body-2">SHOW IN EXPLORER <v-icon class="ml-2 text--secondary" small>mdi-open-in-new</v-icon></div>
@@ -215,8 +162,7 @@ import * as Transactions from '../scripts/transactions.js'
         },
         loading: {
           sign_transaction: false
-        },
-        opacidad: 0.3,
+        }
       }
     },
     async mounted() {
