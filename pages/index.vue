@@ -1,110 +1,186 @@
 <template>
-  <div class="pb-4">
-    <v-row no-gutters class="mx-n2">
-      <v-col cols="12" md="6" class="px-2 mt-4 d-flex align-stretch">
-        <div class="white default-shadow rounded pa-4 width-100">
-          <div class="overflow-hidden">
-            <div class="section-title float-left">BALANCE</div>
-            <div class="float-right d-flex align-center text--secondary text-body-2">SHOW IN EXPLORER <v-icon class="ml-2 text--secondary" small>mdi-open-in-new</v-icon></div>
+  <div class="py-4">
+    <div v-if="!lto_address">
+      <v-row no-gutters class="mx-n2">
+        <v-col cols="12" md="6" class="px-2 d-flex align-stretch">
+          <div class="white default-shadow rounded pa-4 width-100 position-relative">
+            <div>
+              <div class="section-title">TRANSFER</div>
+              <v-icon class="float-right icon-position">mdi-swap-horizontal</v-icon>
+            </div>
+            <div class="section-box rounded mt-2 pa-4 overflow-hidden d-flex align-center justify-space-between text--secondary">
+              The fastest way to send LTO Tokens using your Ledger Hardware.
+            </div>
           </div>
-          <v-row no-gutters class="mx-n2">
-            <v-col cols="12" md="6" class="px-2 mt-2 d-flex align-stretch">
-              <div class="section-box rounded pa-4 overflow-hidden d-flex align-center justify-space-between text--secondary width-100">
-                <div>Total</div>
-                <div class="float-right"> <strong>500</strong> LTO</div>
-              </div>
-            </v-col>
-            <v-col cols="12" md="6" class="px-2 mt-4 mt-sm-2 d-flex align-stretch">
-              <div class="section-box rounded pa-4 overflow-hidden d-flex align-center justify-space-between text--secondary width-100">
-                <div>Available</div>
-                <div class="float-right"> <strong>40</strong> LTO</div>
-              </div>
-            </v-col>
-          </v-row>
-        </div>
-      </v-col>
-      <v-col cols="12" md="6" class="px-2 mt-4 d-flex align-stretch">
-        <div class="white default-shadow rounded pa-4 width-100">
-          <div class="section-title">NETWORK SWITCH</div>
-          <div class="section-box rounded mt-2 pa-4 overflow-hidden d-flex align-center justify-space-between text--secondary">
-            <div>LTO <strong>{{ mainnet_network ? 'Mainnet' : 'Testnet' }}</strong> Environment</div>
-            <v-switch
-              class="float-right my-0 mr-n2"
-              color="#637bd9"
-              v-model="mainnet_network"
-              inset
-              hide-details
-            ></v-switch>
+        </v-col>
+        <v-col cols="12" md="6" class="px-2 d-flex align-stretch mt-4 mt-md-0">
+          <div class="white default-shadow rounded pa-4 width-100 position-relative">
+            <div>
+              <div class="section-title">LEASE</div>
+              <v-icon class="float-right icon-position">mdi-vote-outline</v-icon>
+            </div>
+            <div class="section-box rounded mt-2 pa-4 overflow-hidden d-flex align-center justify-space-between text--secondary">
+              Delegate your voting power to help protect the network while earning rewards. When leasing, your tokens stay in your wallet.
+            </div>
           </div>
-        </div>
-      </v-col>
-    </v-row>
-    <v-row no-gutters class="mx-n2 d-flex align-stretch">
-      <v-col cols="12" class="px-2 mt-4">
-        <div class="white default-shadow rounded pa-4">
-          <v-row no-gutters class="mx-n2">
-            <v-col cols="12" md="10" class="px-2">
-              <div class="section-title">YOUR LEDGER ADDRESS</div>
-              <div class="mt-2 section-box-dense rounded overflow-hidden d-flex align-center justify-space-between text--secondary width-100">
-                <v-text-field color="#637bd9" v-model="lto_address" dense hide-details filled :append-icon="lto_address ? (is_valid_address(lto_address) ? 'mdi-check-circle-outline' : 'mdi-close-circle-outline') : ''"></v-text-field>
+        </v-col>
+      </v-row>
+      <v-row no-gutters class="mx-n2">
+        <v-col cols="12" md="6" class="px-2 d-flex align-stretch mt-4">
+          <div class="white default-shadow rounded pa-4 width-100 position-relative">
+            <div>
+              <div class="section-title">ANCHOR</div>
+              <v-icon class="float-right icon-position">mdi-at</v-icon>
+            </div>
+            <div class="section-box rounded mt-2 pa-4 overflow-hidden d-flex align-center justify-space-between text--secondary">
+              Anchoring is a simple and cheap way to notarize documents or timestamp data on the blockchain making it tamper-proof.
+            </div>
+          </div>
+        </v-col>
+        <v-col cols="12" md="6" class="px-2 mt-4 d-flex align-stretch position-relative">
+          <div class="white default-shadow rounded pa-4 mt-4 mt-md-0 width-100">
+            <div class="" style="height: 100%;">
+              <div class="section-title width-100">CONNECT YOUR WALLET</div>
+              <div class="section-box rounded mt-2 pa-4 overflow-hidden d-flex align-center justify-space-between text--secondary">
+                <v-btn @click="tamanyo = 0;opacidad = 1;" depressed large block class="white--text mt-2 default-color">
+                  CONNECT USING LEDGER
+                  <v-progress-circular v-if="loading.sign_transaction" indeterminate color="white" :size="14" :width="2" class="ml-2"></v-progress-circular>
+                  <v-icon v-else right small class="white--text">mdi-arrow-right</v-icon>
+                </v-btn>
               </div>
-            </v-col>
-            <v-col cols="12" md="2" class="px-2 mt-4 mt-md-0">
-              <div class="section-title">ADDRESS ID</div>
-              <div class="mt-2 section-box-dense rounded overflow-hidden d-flex align-center justify-space-between text--secondary width-100">
-                <v-select v-model="lto_address_id" height="40px" :menu-props="{ bottom: true, offsetY: true }" item-color="#637bd9" color="#637bd9" :items="lto_address_ids" hide-details dense filled></v-select>
+            </div>
+          </div>
+        </v-col>
+      </v-row>
+    </div>
+    <div class="mt-4 position-relative" :style="'opacity:' + opacidad">
+      <v-row no-gutters class="mx-n2">
+        <v-col cols="12" md="6" class="px-2 d-flex align-stretch">
+          <div v-if="true" class="white default-shadow rounded pa-4 width-100">
+            <div class="overflow-hidden">
+              <div class="section-title float-left">BALANCE</div>
+              <div class="float-right d-flex align-center text--secondary text-body-2">SHOW IN EXPLORER <v-icon class="ml-2 text--secondary" small>mdi-open-in-new</v-icon></div>
+            </div>
+            <v-row no-gutters class="mx-n2">
+              <v-col cols="12" md="6" class="px-2 mt-2 d-flex align-stretch">
+                <div class="section-box rounded pa-4 overflow-hidden d-flex align-center justify-space-between text--secondary width-100">
+                  <div>Total</div>
+                  <div class="float-right"> <strong>500</strong> LTO</div>
+                </div>
+              </v-col>
+              <v-col cols="12" md="6" class="px-2 mt-4 mt-sm-2 d-flex align-stretch">
+                <div class="section-box rounded pa-4 overflow-hidden d-flex align-center justify-space-between text--secondary width-100">
+                  <div>Available</div>
+                  <div class="float-right"> <strong>40</strong> LTO</div>
+                </div>
+              </v-col>
+            </v-row>
+          </div>
+          <div v-else class="white default-shadow rounded pa-4 mt-4 mt-md-0 width-100">
+            <div>
+              <div class="section-title width-100">CONNECT YOUR WALLET</div>
+              <div class="section-box rounded pa-2 mt-2">
+                <v-btn depressed large block class="white--text default-color">
+                  CONNECT USING LEDGER
+                  <v-progress-circular v-if="loading.sign_transaction" indeterminate color="white" :size="14" :width="2" class="ml-2"></v-progress-circular>
+                  <v-icon v-else right small class="white--text">mdi-arrow-right</v-icon>
+                </v-btn>
               </div>
-            </v-col>
-          </v-row>
-          <v-row no-gutters class="mx-n2">
-            <v-col cols="12" md="2" class="px-2 mt-4">
-              <div class="section-title">TRANSACTION TYPE</div>
-              <div class="mt-2 section-box-dense rounded overflow-hidden d-flex align-center justify-space-between text--secondary width-100">
-                <v-select v-model="transaction_selected" height="40px" :menu-props="{ bottom: true, offsetY: true }" item-color="#637bd9" color="#637bd9" :items="transaction_type" hide-details dense filled></v-select>
-              </div>
-            </v-col>
-            <v-col v-if="['Transfer'].includes(transaction_selected)" cols="12" md="10" class="px-2 mt-4">
-              <div class="section-title">TO ADDRESS</div>
-              <div class="mt-2 section-box-dense rounded overflow-hidden d-flex align-center justify-space-between text--secondary width-100">
-                <v-text-field color="#637bd9" v-model="to_address" dense hide-details filled :append-icon="to_address ? (is_valid_address(to_address) ? 'mdi-check-circle-outline' : 'mdi-close-circle-outline') : ''"></v-text-field>
-              </div>
-            </v-col>
-            <v-col v-if="['Start Lease'].includes(transaction_selected)" cols="12" md="10" class="px-2 mt-4">
-              <div class="section-title">VALIDATOR ADDRESS</div>
-              <div class="mt-2 section-box-dense rounded overflow-hidden d-flex align-center justify-space-between text--secondary width-100">
-                <v-text-field color="#637bd9" v-model="validator_address" dense hide-details filled :append-icon="validator_address ? (is_valid_address(validator_address) ? 'mdi-check-circle-outline' : 'mdi-close-circle-outline') : ''"></v-text-field>
-              </div>
-            </v-col>
-            <v-col v-if="['Cancel Lease'].includes(transaction_selected)" cols="12" md="10" class="px-2 mt-4">
-              <div class="section-title">LEASE ID</div>
-              <div class="mt-2 section-box-dense rounded overflow-hidden d-flex align-center justify-space-between text--secondary width-100">
-                <v-text-field color="#637bd9" v-model="lease_id" dense hide-details filled></v-text-field>
-              </div>
-            </v-col>
-            <v-col v-if="['Anchor'].includes(transaction_selected)" cols="12" md="10" class="px-2 mt-4">
-              <div class="section-title">DATA</div>
-              <div class="mt-2 section-box-dense rounded overflow-hidden d-flex align-center justify-space-between text--secondary width-100">
-                <v-text-field color="#637bd9" v-model="data" dense hide-details filled></v-text-field>
-              </div>
-            </v-col>
-          </v-row>
-          <v-row no-gutters class="mx-n2 mt-4">
-            <v-col v-if="['Transfer', 'Start Lease'].includes(transaction_selected)" cols="6" class="px-2">
-              <div class="section-title">AMOUNT</div>
-              <div class="mt-2 section-box-dense rounded overflow-hidden d-flex align-center justify-space-between text--secondary width-100">
-                <v-text-field color="#637bd9" v-model="amount" dense hide-details filled></v-text-field>
-              </div>
-            </v-col>
-            <v-col :cols="['Transfer', 'Start Lease'].includes(transaction_selected) ? '6' : '12'" class="px-2">
-              <div class="section-title">TRANSACTION FEE</div>
-              <div class="mt-2 section-box-dense rounded overflow-hidden d-flex align-center justify-space-between text--secondary width-100">
-                <v-text-field color="#637bd9" v-model="fee" dense hide-details filled></v-text-field>
-              </div>
-            </v-col>
-          </v-row>
-        </div>
-      </v-col>
-    </v-row>
+            </div>
+          </div>
+        </v-col>
+        <v-col cols="12" md="6" class="px-2 mt-4 mt-md-0 d-flex align-stretch">
+          <div class="white default-shadow rounded pa-4 width-100">
+            <div class="section-title">NETWORK SWITCH</div>
+            <div class="section-box rounded mt-2 pa-4 overflow-hidden d-flex align-center justify-space-between text--secondary">
+              <div>LTO <strong>{{ mainnet_network ? 'Mainnet' : 'Testnet' }}</strong> Environment</div>
+              <v-switch
+                class="float-right my-0 mr-n2"
+                color="#637bd9"
+                v-model="mainnet_network"
+                inset
+                hide-details
+              ></v-switch>
+            </div>
+          </div>
+        </v-col>
+      </v-row>
+      <v-row no-gutters class="mx-n2 d-flex align-stretch">
+        <v-col cols="12" class="px-2 mt-4">
+          <div class="white default-shadow rounded pa-4">
+            <v-row no-gutters class="mx-n2">
+              <v-col cols="12" md="10" class="px-2">
+                <div class="section-title">YOUR LEDGER ADDRESS</div>
+                <div class="mt-2 section-box-dense rounded overflow-hidden d-flex align-center justify-space-between text--secondary width-100">
+                  <v-text-field disabled color="#637bd9" v-model="lto_address" dense hide-details filled :append-icon="lto_address ? (is_valid_address(lto_address) ? 'mdi-check-circle-outline' : 'mdi-close-circle-outline') : ''"></v-text-field>
+                </div>
+              </v-col>
+              <v-col cols="12" md="2" class="px-2 mt-4 mt-md-0">
+                <div class="section-title">ADDRESS ID</div>
+                <div class="mt-2 section-box-dense rounded overflow-hidden d-flex align-center justify-space-between text--secondary width-100">
+                  <v-select v-model="lto_address_id" height="40px" :menu-props="{ bottom: true, offsetY: true }" item-color="#637bd9" color="#637bd9" :items="lto_address_ids" hide-details dense filled></v-select>
+                </div>
+              </v-col>
+            </v-row>
+            <v-row no-gutters class="mx-n2">
+              <v-col cols="12" md="2" class="px-2 mt-4">
+                <div class="section-title">TRANSACTION TYPE</div>
+                <div class="mt-2 section-box-dense rounded overflow-hidden d-flex align-center justify-space-between text--secondary width-100">
+                  <v-select v-model="transaction_selected" height="40px" :menu-props="{ bottom: true, offsetY: true }" item-color="#637bd9" color="#637bd9" :items="transaction_type" hide-details dense filled></v-select>
+                </div>
+              </v-col>
+              <v-col v-if="['Transfer'].includes(transaction_selected)" cols="12" md="10" class="px-2 mt-4">
+                <div class="section-title">TO ADDRESS</div>
+                <div class="mt-2 section-box-dense rounded overflow-hidden d-flex align-center justify-space-between text--secondary width-100">
+                  <v-text-field color="#637bd9" v-model="to_address" dense hide-details filled :append-icon="to_address ? (is_valid_address(to_address) ? 'mdi-check-circle-outline' : 'mdi-close-circle-outline') : ''"></v-text-field>
+                </div>
+              </v-col>
+              <v-col v-if="['Start Lease'].includes(transaction_selected)" cols="12" md="10" class="px-2 mt-4">
+                <div class="section-title">VALIDATOR ADDRESS</div>
+                <div class="mt-2 section-box-dense rounded overflow-hidden d-flex align-center justify-space-between text--secondary width-100">
+                  <v-text-field color="#637bd9" v-model="validator_address" dense hide-details filled :append-icon="validator_address ? (is_valid_address(validator_address) ? 'mdi-check-circle-outline' : 'mdi-close-circle-outline') : ''"></v-text-field>
+                </div>
+              </v-col>
+              <v-col v-if="['Cancel Lease'].includes(transaction_selected)" cols="12" md="10" class="px-2 mt-4">
+                <div class="section-title">LEASE ID</div>
+                <div class="mt-2 section-box-dense rounded overflow-hidden d-flex align-center justify-space-between text--secondary width-100">
+                  <v-text-field color="#637bd9" v-model="lease_id" dense hide-details filled></v-text-field>
+                </div>
+              </v-col>
+              <v-col v-if="['Anchor'].includes(transaction_selected)" cols="12" md="10" class="px-2 mt-4">
+                <div class="section-title">DATA</div>
+                <div class="mt-2 section-box-dense rounded overflow-hidden d-flex align-center justify-space-between text--secondary width-100">
+                  <v-text-field color="#637bd9" v-model="data" dense hide-details filled></v-text-field>
+                </div>
+              </v-col>
+            </v-row>
+            <v-row no-gutters class="mx-n2 mt-4">
+              <v-col v-if="['Transfer', 'Start Lease'].includes(transaction_selected)" cols="6" class="px-2">
+                <div class="section-title">AMOUNT</div>
+                <div class="mt-2 section-box-dense rounded overflow-hidden d-flex align-center justify-space-between text--secondary width-100">
+                  <v-text-field color="#637bd9" v-model="amount" dense hide-details filled></v-text-field>
+                </div>
+              </v-col>
+              <v-col :cols="['Transfer', 'Start Lease'].includes(transaction_selected) ? '6' : '12'" class="px-2">
+                <div class="section-title">TRANSACTION FEE</div>
+                <div class="mt-2 section-box-dense rounded overflow-hidden d-flex align-center justify-space-between text--secondary width-100">
+                  <v-text-field color="#637bd9" v-model="fee" dense hide-details filled></v-text-field>
+                </div>
+              </v-col>
+            </v-row>
+            <v-row no-gutters class="mt-4">
+              <v-col cols="12">
+                <v-btn depressed large class="float-right white--text default-color">
+                  SIGN TRANSACTION
+                  <v-progress-circular v-if="loading.sign_transaction" indeterminate color="white" :size="14" :width="2" class="ml-2"></v-progress-circular>
+                  <v-icon v-else right small class="white--text">mdi-arrow-right</v-icon>
+                </v-btn>
+              </v-col>
+            </v-row>
+          </div>
+        </v-col>
+      </v-row>
+    </div>
   </div>
 </template>
 
@@ -137,6 +213,10 @@ import * as Transactions from '../scripts/transactions.js'
           networkCode: 76, // 76 mainnet - 84 tesnet
           transport: TransportU2F
         },
+        loading: {
+          sign_transaction: false
+        },
+        opacidad: 0.3,
       }
     },
     async mounted() {
@@ -210,5 +290,13 @@ import * as Transactions from '../scripts/transactions.js'
   }
   .section-box-dense {
     background-color: #f2f4fd;
+  }
+  .icon-position {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+  }
+  .transition-all {
+    transition: all 1s;
   }
 </style>

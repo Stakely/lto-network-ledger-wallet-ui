@@ -24,7 +24,7 @@
             </v-col>
             <v-col cols="12" md="6" class="px-2">
               <div class="d-flex align-center">
-                <v-icon small class="white--text" left>mdi-telegram</v-icon>Do you need help? <a href="https://t.me/joinchat/BrVdbEUBdYOXu4N8mY9wEQ" target="_blank" class="white--text mx-1"><strong>Join LTO Network Tech chat</strong></a>
+                <v-icon small class="white--text" left>mdi-telegram</v-icon>Need help? <a href="https://t.me/joinchat/BrVdbEUBdYOXu4N8mY9wEQ" target="_blank" class="white--text mx-1"><strong>Join LTO Network Tech chat</strong></a>
               </div>
               <div class="d-flex align-center">
                 <v-icon small class="white--text" left>mdi-notebook-edit-outline</v-icon>Made by <a href="https://stakely.io" target="_blank" class="white--text mx-1"><strong>Stakely.io</strong></a> Team
@@ -39,9 +39,6 @@
 
 <script>
   export default {
-    mounted: async function () {
-      console.log(this)
-    },
     data () {
       return {
       }
@@ -50,13 +47,7 @@
 </script>
 
 <style scoped>
-  .default-color {
-    background: rgb(99,123,217);
-    background: -moz-linear-gradient(45deg, rgba(99,123,217,1) 0%, rgba(126,149,239,1) 100%);
-    background: -webkit-linear-gradient(45deg, rgba(99,123,217,1) 0%, rgba(126,149,239,1) 100%);
-    background: linear-gradient(45deg, rgba(99,123,217,1) 0%, rgba(126,149,239,1) 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#637bd9",endColorstr="#7e95ef",GradientType=1);
-  }
+  
   .header-image {
     background-image: url('/lto-header-background.png');
     background-repeat: repeat;
@@ -75,6 +66,13 @@
   }
   .default-shadow { 
     box-shadow: 0 12px 24px 0 rgba(101, 93, 191, 0.13)!important;
+  }
+  .default-color {
+    background: rgb(99,123,217);
+    background: -moz-linear-gradient(45deg, rgba(99,123,217,1) 0%, rgba(126,149,239,1) 100%);
+    background: -webkit-linear-gradient(45deg, rgba(99,123,217,1) 0%, rgba(126,149,239,1) 100%);
+    background: linear-gradient(45deg, rgba(99,123,217,1) 0%, rgba(126,149,239,1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#637bd9",endColorstr="#7e95ef",GradientType=1);
   }
   .overflow-hidden {
     overflow: hidden;
@@ -104,5 +102,8 @@
   }
   a:active {
     text-decoration: none;
+  }
+  .position-relative {
+    position: relative;
   }
 </style>
