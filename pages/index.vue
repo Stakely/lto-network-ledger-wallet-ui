@@ -302,6 +302,7 @@
 
 <script>
 const BigNumber = require('bignumber.js')
+const bs58 = require('bs58')
 
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import {WavesLedger} from 'lto-ledger-js-unofficial-test';
@@ -487,6 +488,7 @@ import AnimatedNumber from "animated-number-vue";
             this.loading.sign_transaction = false
             return this.pushAlert('general', 'error', 'A fee amount must be entered to proceed with the transaction.')
           }
+
           this.json_signed_tx = {
             type: 4,
             senderPublicKey: this.lto_public_key, 
@@ -496,9 +498,9 @@ import AnimatedNumber from "animated-number-vue";
             timestamp: new Date().getTime()
           }
           
-          const bytes = Transactions.prepareBytes(this.json_signed_tx)
+          const transaction_bytes = Transactions.prepareBytes(this.json_signed_tx)
           try {
-            this.json_signed_tx.signature = await this.ledger.signTransaction(this.lto_address_id, '', bytes, 1)
+            this.json_signed_tx.signature = await this.ledger.signTransaction(this.lto_address_id, '', transaction_bytes, 1)
           } catch (error) {
             console.log(error.message)
             this.pushAlert('general', 'error', 'Ledger error: ' + error.message)
@@ -521,12 +523,28 @@ import AnimatedNumber from "animated-number-vue";
             this.loading.sign_transaction = false
             return this.pushAlert('general', 'error', 'A fee amount must be entered to proceed with the transaction.')
           }
-          tx_data = {
-            address: this.lto_address,
+
+          this.json_signed_tx = {
             type: 8,
-            validator_address: this.validator_address,
-            fee: this.fee
+            senderPublicKey: this.lto_public_key, 
+            recipient: this.validator_address,
+            fee: BigNumber(this.fee).multipliedBy(100000000).toNumber(),
+            amount: BigNumber(this.amount).multipliedBy(100000000).toNumber(),
+            timestamp: new Date().getTime()
           }
+
+          const transaction_bytes = Transactions.prepareBytes(this.json_signed_tx)
+          try {
+            this.json_signed_tx.signature = await this.ledger.signTransaction(this.lto_address_id, '', transaction_bytes, 1)
+          } catch (error) {
+            console.log(error.message)
+            this.pushAlert('general', 'error', 'Ledger error: ' + error.message)
+            this.loading.sign_transaction = false
+            return
+          }
+          
+          this.loading.sign_transaction = false
+          this.dialogs.broadcast_transaction = true
         } else if (this.transaction_selected == 'Cancel Lease') {
           if (!this.lease_id) {
             this.loading.sign_transaction = false
@@ -536,12 +554,27 @@ import AnimatedNumber from "animated-number-vue";
             this.loading.sign_transaction = false
             return this.pushAlert('general', 'error', 'A fee amount must be entered to proceed with the transaction.')
           }
-          tx_data = {
-            address: this.lto_address,
+
+          this.json_signed_tx = {
             type: 9,
-            lease_id: this.lease_id,
-            fee: this.fee
+            senderPublicKey: this.lto_public_key, 
+            leaseId: this.lease_id,
+            fee: BigNumber(this.fee).multipliedBy(100000000).toNumber(),
+            timestamp: new Date().getTime()
           }
+
+          const transaction_bytes = Transactions.prepareBytes(this.json_signed_tx)
+          try {
+            this.json_signed_tx.signature = await this.ledger.signTransaction(this.lto_address_id, '', transaction_bytes, 1)
+          } catch (error) {
+            console.log(error.message)
+            this.pushAlert('general', 'error', 'Ledger error: ' + error.message)
+            this.loading.sign_transaction = false
+            return
+          }
+          
+          this.loading.sign_transaction = false
+          this.dialogs.broadcast_transaction = true
         } else if (this.transaction_selected == 'Anchor') {
           if (!this.data) {
             this.loading.sign_transaction = false
@@ -551,12 +584,33 @@ import AnimatedNumber from "animated-number-vue";
             this.loading.sign_transaction = false
             return this.pushAlert('general', 'error', 'A fee amount must be entered to proceed with the transaction.')
           }
-          tx_data = {
-            address: this.lto_address,
+
+          const b58Anchor = bs58.encode(Buffer.from(this.data, 'hex'))
+
+          this.json_signed_tx = {
             type: 15,
-            data: this.data,
-            fee: this.fee
+            version: 1,
+            senderPublicKey: this.lto_public_key, 
+            fee: BigNumber(this.fee).multipliedBy(100000000).toNumber(),
+            timestamp: new Date().getTime(),
+            anchor_raw: this.data,
+            anchors: [b58Anchor],
+            proofs: []
           }
+
+          const transaction_bytes = Transactions.prepareBytes(this.json_signed_tx)
+          try {
+            // Anchor signature is placed inside the proofs array
+            this.json_signed_tx.proofs.push(await this.ledger.signTransaction(this.lto_address_id, '', transaction_bytes, 1))
+          } catch (error) {
+            console.log(error.message)
+            this.pushAlert('general', 'error', 'Ledger error: ' + error.message)
+            this.loading.sign_transaction = false
+            return
+          }
+          
+          this.loading.sign_transaction = false
+          this.dialogs.broadcast_transaction = true
         }
       },
       async broadcastTransaction () {
@@ -574,9 +628,13 @@ import AnimatedNumber from "animated-number-vue";
           if (res.error) {
             throw new Error(res.message)
           } else {
+            // Add some delay so the transaction is available in the explorer
+            await setTimeout(() => {}, 2000); 
             this.loading.broadcast_transaction = false
             this.pushAlert('modal', 'success', 'Transaction has been sent successfuly.')
             this.broadcast_tx = res.id
+            // Update wallet balances since the user has performed a transaction
+            this.getBalances()
           }
         } catch (error) {
           this.loading.broadcast_transaction = false

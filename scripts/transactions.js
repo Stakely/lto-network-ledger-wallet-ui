@@ -94,15 +94,12 @@ export function prepareBytes (tx) {
     const header = new Uint8Array([15, 1, 15, 1])
     // public key
     const senderPublicKey = Base58.decode(tx.senderPublicKey)
-    // number of anchors
-    // TODO: multianchoring
+    // Number of anchors (always one anchor)
     const anchorNum = new Uint8Array([0, 1])
-    // anchor length
-    // let anchorLength = shortToByteArray(tx.anchor.length).reverse()
-    // why is the length 32 and not 44?
-    const anchorLength = new Uint8Array([0, 32])
-    // anchor
-    const anchor = Base58.decode(tx.anchor)
+    // Anchor
+    const anchor = Uint8Array.from(Buffer.from(tx.anchor_raw, 'hex'))
+    // Anchor length, calculated with the decoded anchor data
+    const anchorLength = new Uint8Array([0, anchor.length])
     // timestamp
     const timestamp = longToByteArray(tx.timestamp).reverse()
     // fee
