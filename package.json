@@ -12,10 +12,13 @@
     "@ledgerhq/hw-transport-u2f": "^5.36.0-deprecated",
     "@nuxtjs/axios": "^5.13.6",
     "@nuxtjs/pwa": "^3.3.5",
+    "animated-number-vue": "^1.0.0",
     "base-58": "^0.0.1",
+    "big-number": "^2.0.0",
     "core-js": "^3.15.1",
     "lto-ledger-js-unofficial-test": "^1.0.5",
     "nuxt": "^2.15.7",
+    "vue-json-pretty": "^1.8.1",
     "vuetify": "^2.5.5"
   },
   "devDependencies": {

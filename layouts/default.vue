@@ -21,6 +21,9 @@
               <div class="d-flex align-center">
                 <v-icon small class="white--text" left>mdi-github</v-icon><a href="https://github.com/iicc1/lto-network-ledger-staking-ui" target="_blank" class="white--text mx-1"><strong>Fork us on GitHub</strong></a>
               </div>
+              <div class="d-flex align-center">
+                <v-icon small class="white--text" left>mdi-bug-outline</v-icon><a href="https://github.com/iicc1/lto-network-ledger-staking-ui/issues" target="_blank" class="white--text mx-1">Bug reports / Improvements</a>
+              </div>
             </v-col>
             <v-col cols="12" md="6" class="px-2">
               <div class="d-flex align-center">
