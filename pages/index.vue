@@ -128,7 +128,7 @@
               <v-col cols="12" md="10" class="px-2">
                 <div class="section-title">YOUR LEDGER ADDRESS</div>
                 <div class="mt-2 section-box-dense rounded overflow-hidden d-flex align-center justify-space-between text--secondary width-100">
-                  <v-text-field disabled color="#637bd9" v-model="lto_address" dense hide-details filled :append-icon="lto_address ? (is_valid_address(lto_address) ? 'mdi-check-circle-outline' : 'mdi-close-circle-outline') : ''"></v-text-field>
+                  <v-text-field readonly color="#637bd9" v-model="lto_address" dense hide-details filled :append-icon="lto_address ? (is_valid_address(lto_address) ? 'mdi-check-circle-outline' : 'mdi-close-circle-outline') : ''"></v-text-field>
                 </div>
               </v-col>
               <v-col cols="12" md="2" class="px-2 mt-4 mt-md-0">
@@ -301,7 +301,7 @@
 </template>
 
 <script>
-const BigNumber = require('big-number');
+const BigNumber = require('bignumber.js')
 
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import {WavesLedger} from 'lto-ledger-js-unofficial-test';
@@ -377,23 +377,7 @@ import AnimatedNumber from "animated-number-vue";
           '15': 'Anchor'
         },
         show_raw_data: false
-      }
-    },
-    async mounted() {
-      // Creates a new Ledger instance
-      try {
-        this.ledger = new WavesLedger(this.ledgerOptions)
-        // Tries to connect to the device and fetches the first wallet
-        const userInfo = await this.ledger.getUserDataById(this.lto_address_id)
-        if (userInfo.address) {
-          this.lto_address = userInfo.address;
-          this.lto_public_key = userInfo.publicKey;
-        }
-      } catch (error) {
-        // TODO: show an error message
-        console.log(error.message)
-      }
-      
+      }      
     },
     computed: {
       is_valid_address: function () {
@@ -442,18 +426,31 @@ import AnimatedNumber from "animated-number-vue";
         this.addressIdChanged()
       }
     },
+    mounted() {
+      setInterval(() => this.getBalances(), 15000)
+    },
     methods: {
       formatTwoDecimals(value) {
         return `${ Number(value).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }`;
       },
-      connectLedger() {
+      async connectLedger() {
         this.loading.connect_ledger = true
-        setTimeout(() => {
-          this.lto_address = 'test'
-          this.form_opacity = 1
+        try {
+          this.ledger = new WavesLedger(this.ledgerOptions)
+          const userInfo = await this.ledger.getUserDataById(this.lto_address_id)
+          if (userInfo.address) {
+            this.lto_address = userInfo.address
+            this.lto_public_key = userInfo.publicKey
+            this.form_opacity = 1
+            this.loading.connect_ledger = false
+            this.getBalances()
+            this.clearAlert('general')
+          }
+        } catch (error) {
+          console.log(error.message)
+          this.pushAlert('general', 'error', 'Ledger error: ' + error.message)
           this.loading.connect_ledger = false
-          this.$vuetify.goTo('#wallet', { duration: 700, easing: 'easeInCubic'})
-        }, 3000);
+        }
       },
       disconnectLedger() {
         this.lto_address = null
@@ -462,14 +459,20 @@ import AnimatedNumber from "animated-number-vue";
       },
       networkChanged() {
         console.log('Network has changed.')
+        if (this.ledgerOptions.networkCode === 76) {
+          this.ledgerOptions.networkCode = 84
+        } else if (this.ledgerOptions.networkCode === 84) {
+          this.ledgerOptions.networkCode = 76
+        }
+        this.connectLedger()
       },
       addressIdChanged() {
         console.log('Address ID has changed.')
+        this.connectLedger()
       },
-      signTransaction() {
+      async signTransaction() {
         this.loading.sign_transaction = true
 
-        let tx_data = {}
         // Check Input Data
         if (this.transaction_selected == 'Transfer') {
           if (!this.to_address) {
@@ -484,12 +487,27 @@ import AnimatedNumber from "animated-number-vue";
             this.loading.sign_transaction = false
             return this.pushAlert('general', 'error', 'A fee amount must be entered to proceed with the transaction.')
           }
-          tx_data = {
-            address: this.lto_address,
+          this.json_signed_tx = {
             type: 4,
-            to_address: this.to_address,
-            fee: this.fee
+            senderPublicKey: this.lto_public_key, 
+            recipient: this.to_address,
+            fee: BigNumber(this.fee).multipliedBy(100000000).toNumber(),
+            amount: BigNumber(this.amount).multipliedBy(100000000).toNumber(),
+            timestamp: new Date().getTime()
           }
+          
+          const bytes = Transactions.prepareBytes(this.json_signed_tx)
+          try {
+            this.json_signed_tx.signature = await this.ledger.signTransaction(this.lto_address_id, '', bytes, 1)
+          } catch (error) {
+            console.log(error.message)
+            this.pushAlert('general', 'error', 'Ledger error: ' + error.message)
+            this.loading.sign_transaction = false
+            return
+          }
+          
+          this.loading.sign_transaction = false
+          this.dialogs.broadcast_transaction = true
         } else if (this.transaction_selected == 'Start Lease') {
           if (!this.validator_address) {
             this.loading.sign_transaction = false
@@ -540,26 +558,33 @@ import AnimatedNumber from "animated-number-vue";
             fee: this.fee
           }
         }
-        setTimeout(() => {
-          this.loading.sign_transaction = false
-          this.dialogs.broadcast_transaction = true
-        }, 3000);
       },
-      broadcastTransaction () {
+      async broadcastTransaction () {
         this.loading.broadcast_transaction = true
-        setTimeout(() => {
-          if (false) {
-            this.loading.broadcast_transaction = false
-            this.dialogs.broadcast_transaction = false
-            this.pushAlert('general', 'error', 'Transaction failed.')
+        try {
+          let res = await fetch('https://nodes.lto.network/transactions/broadcast', {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(this.json_signed_tx)
+          })
+          res = await res.json()
+          if (res.error) {
+            throw new Error(res.message)
           } else {
             this.loading.broadcast_transaction = false
             this.pushAlert('modal', 'success', 'Transaction has been sent successfuly.')
-            this.broadcast_tx = '4eMLf3ia89K7LBEyLaKJue7kNbhJxW7F1dUjrshnrEqa'
+            this.broadcast_tx = res.id
           }
-        }, 3000);
+        } catch (error) {
+          this.loading.broadcast_transaction = false
+          this.dialogs.broadcast_transaction = false
+          this.pushAlert('general', 'error', 'Transaction failed: ' + error.message)
+        }
       },
-      pushAlert ( location, type, message ) {
+      pushAlert (location, type, message) {
         if (location == 'general') {
           this.alert.type = type
           this.alert.message = message
@@ -570,7 +595,7 @@ import AnimatedNumber from "animated-number-vue";
           this.modal_alert.show = true
         }
       },
-      clearAlert ( location ) {
+      clearAlert (location) {
         if (location == 'general') {
           this.alert.type = null
           this.alert.message = null
@@ -588,6 +613,26 @@ import AnimatedNumber from "animated-number-vue";
         this.data = null
         this.amount = null
         this.fee = null
+      },
+      async getBalances() {
+        if (!this.lto_address) return
+        try {
+          let res = await fetch('https://nodes.lto.network/addresses/balance/details/' +  this.lto_address, {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          })
+          res = await res.json()
+          if (res.error) {
+            throw new Error(error.message)
+          } else {
+            this.total_lto = BigNumber(res.regular).dividedBy(100000000).toNumber()
+            this.available_lto = BigNumber(res.available).dividedBy(100000000).toNumber()
+          }
+        } catch (error) {
+          console.log(error.message)
+          this.pushAlert('general', 'error', 'Error getting wallet balance: ' + error.message)
+        }
       }
     }
   }
