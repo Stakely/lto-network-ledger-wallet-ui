@@ -428,11 +428,12 @@ import AnimatedNumber from "animated-number-vue";
       }
     },
     mounted() {
+      // Fetch wallet balance data every 15s
       setInterval(() => this.getBalances(), 15000)
     },
     methods: {
       formatTwoDecimals(value) {
-        return `${ Number(value).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }`;
+        return `${ Number(value).toFixed(3).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }`;
       },
       async connectLedger() {
         this.loading.connect_ledger = true
@@ -446,6 +447,7 @@ import AnimatedNumber from "animated-number-vue";
             this.loading.connect_ledger = false
             this.getBalances()
             this.clearAlert('general')
+            this.$vuetify.goTo('#wallet', { duration: 700, easing: 'easeInCubic'})
           }
         } catch (error) {
           console.log(error.message)
@@ -616,7 +618,11 @@ import AnimatedNumber from "animated-number-vue";
       async broadcastTransaction () {
         this.loading.broadcast_transaction = true
         try {
-          let res = await fetch('https://nodes.lto.network/transactions/broadcast', {
+          let url = 'https://nodes.lto.network/transactions/broadcast'
+          if (!this.mainnet_network) {
+            url = 'https://testnet.lto.network/transactions/broadcast'
+          }
+          let res = await fetch(url, {
             method: 'POST',
             headers: {
               'Accept': 'application/json',
@@ -675,7 +681,11 @@ import AnimatedNumber from "animated-number-vue";
       async getBalances() {
         if (!this.lto_address) return
         try {
-          let res = await fetch('https://nodes.lto.network/addresses/balance/details/' +  this.lto_address, {
+          let url = 'https://nodes.lto.network/addresses/balance/details/'
+          if (!this.mainnet_network) {
+            url = 'https://testnet.lto.network/addresses/balance/details/'
+          }
+          let res = await fetch(url +  this.lto_address, {
             headers: {
               'Content-Type': 'application/json'
             }
