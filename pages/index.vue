@@ -4,6 +4,10 @@
       <div class="default-color rounded white--text py-2 px-4 d-flex align-center">
         <v-icon small left class="white--text">mdi-home-outline</v-icon> Welcome
       </div>
+      <v-alert dense v-if="conn_alert.show" text outlined :color="conn_alert.type" :icon="icon[conn_alert.type]" class="position-relative mt-4">
+				{{ conn_alert.message }}
+				<v-icon @click="conn_alert.show = false" :color="conn_alert.type" class="close-x-button">mdi-close</v-icon>
+			</v-alert>
       <v-row no-gutters class="mx-n2 mt-4">
         <v-col cols="12" md="6" class="px-2 d-flex align-stretch">
           <div class="white default-shadow rounded pa-4 width-100 position-relative">
@@ -66,7 +70,7 @@
       <div class="default-color rounded white--text py-2 px-4 d-flex align-center">
         <v-icon small left class="white--text">mdi-wallet-outline</v-icon> Ledger Hardware Wallet
       </div>
-      <v-alert v-if="alert.show" text outlined :color="alert.type" :icon="icon[alert.type]" class="position-relative mt-4">
+      <v-alert dense v-if="alert.show" text outlined :color="alert.type" :icon="icon[alert.type]" class="position-relative mt-4">
 				{{ alert.message }}
 				<v-icon @click="alert.show = false" :color="alert.type" class="close-x-button">mdi-close</v-icon>
 			</v-alert>
@@ -75,7 +79,9 @@
           <div class="white default-shadow rounded pa-4 width-100">
             <div class="overflow-hidden">
               <div class="section-title float-left">BALANCE</div>
-              <div class="float-right d-flex align-center text--secondary text-body-2">SHOW IN EXPLORER <v-icon class="ml-2 text--secondary" small>mdi-open-in-new</v-icon></div>
+              <a :href="`https://explorer.lto.network/address/${ lto_address }`" target="_blank">
+                <div class="float-right d-flex align-center text--secondary text-body-2">SHOW IN EXPLORER <v-icon class="ml-2 text--secondary" small>mdi-open-in-new</v-icon></div>
+              </a>
             </div>
             <v-row no-gutters class="mx-n2">
               <v-col cols="12" md="6" class="px-2 mt-2 d-flex align-stretch">
@@ -92,18 +98,6 @@
               </v-col>
             </v-row>
           </div>
-          <!--div v-else class="white default-shadow rounded pa-4 mt-4 mt-md-0 width-100">
-            <div>
-              <div class="section-title width-100">CONNECT YOUR WALLET</div>
-              <div class="section-box rounded pa-2 mt-2">
-                <v-btn depressed large block class="white--text default-color">
-                  CONNECT USING LEDGER
-                  <v-progress-circular v-if="loading.sign_transaction" indeterminate color="white" :size="14" :width="2" class="ml-2"></v-progress-circular>
-                  <v-icon v-else right small class="white--text">mdi-arrow-right</v-icon>
-                </v-btn>
-              </div>
-            </div>
-          </div-->
         </v-col>
         <v-col cols="12" md="6" class="px-2 mt-4 mt-md-0 d-flex align-stretch">
           <div class="white default-shadow rounded pa-4 width-100">
@@ -164,9 +158,9 @@
                 </div>
               </v-col>
               <v-col v-if="['Anchor'].includes(transaction_selected)" cols="12" md="10" class="px-2 mt-4">
-                <div class="section-title">DATA</div>
+                <div class="section-title">DATA (HEX)</div>
                 <div class="mt-2 section-box-dense rounded overflow-hidden d-flex align-center justify-space-between text--secondary width-100">
-                  <v-text-field color="#637bd9" v-model="data" dense hide-details filled></v-text-field>
+                  <v-text-field color="#637bd9" v-model="data" :append-icon="data ? (is_valid_hex(data) ? 'mdi-check-circle-outline' : 'mdi-close-circle-outline') : ''" dense hide-details filled></v-text-field>
                 </div>
               </v-col>
             </v-row>
@@ -244,10 +238,6 @@
                         </v-col>
                         <v-col cols="12" class="px-1">
                           <div class="mt-3">
-                            <!--div class="section-title-small">RAW DATA (<span @click="show_raw_data = !show_raw_data">{{ show_raw_data ? 'hide' : 'show' }}</span>)</div>
-                            <div class="section-box-dense rounded overflow-x-scroll pa-2" v-if="show_raw_data">
-                              <vue-json-pretty :data="json_signed_tx"> </vue-json-pretty>
-                            </div-->
                             <v-expansion-panels>
                               <v-expansion-panel>
                                 <v-expansion-panel-header class="pa-3 section-box-dense rounded" @click="show_raw_data = !show_raw_data">
@@ -354,6 +344,11 @@ import AnimatedNumber from "animated-number-vue";
           type: null,
           message: null
         },
+        conn_alert: {
+          show: false,
+          type: null,
+          message: null
+        },
         icon: {
           error: 'mdi-alert-circle-outline',
           success: 'mdi-check-circle-outline'
@@ -394,6 +389,12 @@ import AnimatedNumber from "animated-number-vue";
           } else {
               return false
           }
+        }
+      },
+      is_valid_hex: function () {
+        return function ( hexadecimal ) {
+          let regexp = /^[0-9a-fA-F]+$/
+          return regexp.test(hexadecimal)
         }
       },
       to_lto: function () {
@@ -451,7 +452,7 @@ import AnimatedNumber from "animated-number-vue";
           }
         } catch (error) {
           console.log(error.message)
-          this.pushAlert('general', 'error', 'Ledger error: ' + error.message)
+          this.pushAlert('welcome', 'error', 'Ledger error: ' + error.message)
           this.loading.connect_ledger = false
         }
       },
@@ -582,6 +583,10 @@ import AnimatedNumber from "animated-number-vue";
             this.loading.sign_transaction = false
             return this.pushAlert('general', 'error', 'A Data string must be entered to proceed with the transaction.')
           }
+          if (!isValidHex(this.data)) {
+            this.loading.sign_transaction = false
+            return this.pushAlert('general', 'error', 'The data entered must be encoded in hexadecimal.')
+          }
           if (!this.fee) {
             this.loading.sign_transaction = false
             return this.pushAlert('general', 'error', 'A fee amount must be entered to proceed with the transaction.')
@@ -657,6 +662,10 @@ import AnimatedNumber from "animated-number-vue";
           this.modal_alert.type = type
           this.modal_alert.message = message
           this.modal_alert.show = true
+        } else if (location == 'welcome') {
+          this.conn_alert.type = type
+          this.conn_alert.message = message
+          this.conn_alert.show = true
         }
       },
       clearAlert (location) {
@@ -668,7 +677,15 @@ import AnimatedNumber from "animated-number-vue";
           this.modal_alert.type = null
           this.modal_alert.message = null
           this.modal_alert.show = false
+        } else if (location == 'welcome') {
+          this.conn_alert.type = null
+          this.conn_alert.message = null
+          this.conn_alert.show = false
         }
+      },
+      isValidHex (hexadecimal) {
+        let regexp = /^[0-9a-fA-F]+$/
+        return regexp.test(hexadecimal)
       },
       clearData() {
         this.to_address = null
