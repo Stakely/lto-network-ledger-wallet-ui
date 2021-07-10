@@ -583,7 +583,7 @@ import AnimatedNumber from "animated-number-vue";
             this.loading.sign_transaction = false
             return this.pushAlert('general', 'error', 'A Data string must be entered to proceed with the transaction.')
           }
-          if (!isValidHex(this.data)) {
+          if (!this.isValidHex(this.data)) {
             this.loading.sign_transaction = false
             return this.pushAlert('general', 'error', 'The data entered must be encoded in hexadecimal.')
           }
