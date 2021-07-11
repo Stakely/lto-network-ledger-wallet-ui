@@ -468,6 +468,9 @@ import AnimatedNumber from "animated-number-vue";
       },
       async signTransaction() {
         this.loading.sign_transaction = true
+        // Clear previously broadcasted tx
+        this.broadcast_tx = null
+        this.clearAlert('modal')
 
         // Check Input Data
         if (this.transaction_selected == 'Transfer') {
@@ -488,8 +491,8 @@ import AnimatedNumber from "animated-number-vue";
             type: 4,
             senderPublicKey: this.lto_public_key, 
             recipient: this.to_address,
-            fee: BigNumber(this.fee).multipliedBy(100000000).toNumber(),
-            amount: BigNumber(this.amount).multipliedBy(100000000).toNumber(),
+            fee: BigNumber(this.fee).multipliedBy(100000000).decimalPlaces(0).toNumber(),
+            amount: BigNumber(this.amount).multipliedBy(100000000).decimalPlaces(0).toNumber(),
             timestamp: new Date().getTime()
           }
           
@@ -523,8 +526,8 @@ import AnimatedNumber from "animated-number-vue";
             type: 8,
             senderPublicKey: this.lto_public_key, 
             recipient: this.validator_address,
-            fee: BigNumber(this.fee).multipliedBy(100000000).toNumber(),
-            amount: BigNumber(this.amount).multipliedBy(100000000).toNumber(),
+            fee: BigNumber(this.fee).multipliedBy(100000000).decimalPlaces(0).toNumber(),
+            amount: BigNumber(this.amount).multipliedBy(100000000).decimalPlaces(0).toNumber(),
             timestamp: new Date().getTime()
           }
 
@@ -554,7 +557,7 @@ import AnimatedNumber from "animated-number-vue";
             type: 9,
             senderPublicKey: this.lto_public_key, 
             leaseId: this.lease_id,
-            fee: BigNumber(this.fee).multipliedBy(100000000).toNumber(),
+            fee: BigNumber(this.fee).multipliedBy(100000000).decimalPlaces(0).toNumber(),
             timestamp: new Date().getTime()
           }
 
@@ -590,7 +593,7 @@ import AnimatedNumber from "animated-number-vue";
             type: 15,
             version: 1,
             senderPublicKey: this.lto_public_key, 
-            fee: BigNumber(this.fee).multipliedBy(100000000).toNumber(),
+            fee: BigNumber(this.fee).multipliedBy(100000000).decimalPlaces(0).toNumber(),
             timestamp: new Date().getTime(),
             anchor_raw: this.data,
             anchors: [b58Anchor],
