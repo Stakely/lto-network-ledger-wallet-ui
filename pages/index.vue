@@ -79,7 +79,7 @@
           <div class="white default-shadow rounded pa-4 width-100">
             <div class="overflow-hidden">
               <div class="section-title float-left">BALANCE</div>
-              <a :href="`https://explorer.lto.network/address/${ lto_address }`" target="_blank">
+              <a :href="`https://${ !mainnet_network ? 'testnet-' : '' }explorer.lto.network/address/${ lto_address }`" target="_blank">
                 <div class="float-right d-flex align-center text--secondary text-body-2">SHOW IN EXPLORER <v-icon class="ml-2 text--secondary" small>mdi-open-in-new</v-icon></div>
               </a>
             </div>
@@ -258,7 +258,7 @@
                         <div class="section-box-dense rounded overflow-hidden">
                           <v-text-field class="input-text-value custom-boxes rounded" color="#637bd9" v-model="broadcast_tx" dense hide-details filled>
                             <template v-slot:append>
-                              <a target="_blank" ref="nofollow" :href="`https://explorer.lto.network/transaction/${ broadcast_tx }`" left>
+                              <a target="_blank" ref="nofollow" :href="`https://${ !mainnet_network ? 'testnet-' : '' }explorer.lto.network/transaction/${ broadcast_tx }`" left>
                                 <v-icon color="#637bd9">
                                   mdi-open-in-new
                                 </v-icon>
@@ -323,9 +323,6 @@ import AnimatedNumber from "animated-number-vue";
         ledger: null,
         ledgerOptions: {
           debug: false,
-          openTimeout: 3000,
-          listenTimeout: 30000,
-          exchangeTimeout: 30000,
           networkCode: 76, // 76 mainnet - 84 tesnet
           transport: TransportU2F
         },
