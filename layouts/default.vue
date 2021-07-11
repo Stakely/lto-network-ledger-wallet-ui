@@ -30,7 +30,7 @@
                 <v-icon small class="white--text" left>mdi-telegram</v-icon>Need help? <a href="https://t.me/joinchat/BrVdbEUBdYOXu4N8mY9wEQ" target="_blank" class="white--text mx-1"><strong>Join LTO Network Tech chat</strong></a>
               </div>
               <div class="d-flex align-center">
-                <v-icon small class="white--text" left>mdi-notebook-edit-outline</v-icon>Made by <a href="https://stakely.io" target="_blank" class="white--text mx-1"><strong>Stakely.io</strong></a> Team
+                <v-icon small class="white--text" left>mdi-notebook-edit-outline</v-icon>Made by the<a href="https://stakely.io" target="_blank" class="white--text mx-1"><strong>Stakely.io</strong></a> Team
               </div>
             </v-col>
           </v-row>

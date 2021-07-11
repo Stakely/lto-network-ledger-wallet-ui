@@ -322,8 +322,9 @@ import AnimatedNumber from "animated-number-vue";
         available_lto: 0,
         ledger: null,
         ledgerOptions: {
+          debug: false,
           openTimeout: 3000,
-          listenTimeout: 250000,
+          listenTimeout: 30000,
           exchangeTimeout: 250000,
           networkCode: 76, // 76 mainnet - 84 tesnet
           transport: TransportU2F
@@ -356,15 +357,7 @@ import AnimatedNumber from "animated-number-vue";
         dialogs: {
           broadcast_transaction: false
         },
-        json_signed_tx: {
-          'type': 4,
-          'amount': 4600000000,
-          'fee': 100000000,
-          'recipient': '3MyhVrN1o2ij34o2k3j42o3kj42o2j34',
-          'senderPublicKey': '6x8asekahsdakjsdhkadhjaksdhasd',
-          'timestamp': 156467984954,
-          'signature': 'uqoqwirjweorkwjeorkwhjelrkwjelrkwjelrkjwe'
-        },
+        json_signed_tx: {},
         broadcast_tx: null,
         tx_types: {
           '4': 'Transfer',
@@ -449,6 +442,8 @@ import AnimatedNumber from "animated-number-vue";
             this.getBalances()
             this.clearAlert('general')
             this.$vuetify.goTo('#wallet', { duration: 700, easing: 'easeInCubic'})
+          } else {
+            throw new Error('Not able to get the address ' + JSON.stringify(userInfo))
           }
         } catch (error) {
           console.log(error.message)
@@ -462,7 +457,6 @@ import AnimatedNumber from "animated-number-vue";
         this.clearData()
       },
       networkChanged() {
-        console.log('Network has changed.')
         if (this.ledgerOptions.networkCode === 76) {
           this.ledgerOptions.networkCode = 84
         } else if (this.ledgerOptions.networkCode === 84) {
@@ -471,7 +465,6 @@ import AnimatedNumber from "animated-number-vue";
         this.connectLedger()
       },
       addressIdChanged() {
-        console.log('Address ID has changed.')
         this.connectLedger()
       },
       async signTransaction() {
