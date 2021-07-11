@@ -1,5 +1,5 @@
 {
-  "name": "LTONetworkLedger",
+  "name": "lto-network-ledger-wallet",
   "version": "1.0.0",
   "private": true,
   "scripts": {
