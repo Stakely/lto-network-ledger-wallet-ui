@@ -38,7 +38,7 @@ export default {
   pwa: {
     manifest: {
       lang: 'en',
-      short_name: "LTO Ledger Wallet",
+      short_name: "LTO Wallet",
       name: "LTO Network Ledger Wallet",
       icons: [
         {
