@@ -325,7 +325,7 @@ import AnimatedNumber from "animated-number-vue";
           debug: false,
           openTimeout: 3000,
           listenTimeout: 30000,
-          exchangeTimeout: 250000,
+          exchangeTimeout: 30000,
           networkCode: 76, // 76 mainnet - 84 tesnet
           transport: TransportU2F
         },
@@ -434,6 +434,7 @@ import AnimatedNumber from "animated-number-vue";
         try {
           this.ledger = new WavesLedger(this.ledgerOptions)
           const userInfo = await this.ledger.getUserDataById(this.lto_address_id)
+
           if (userInfo.address) {
             this.lto_address = userInfo.address
             this.lto_public_key = userInfo.publicKey
@@ -441,6 +442,7 @@ import AnimatedNumber from "animated-number-vue";
             this.loading.connect_ledger = false
             this.getBalances()
             this.clearAlert('general')
+            this.clearAlert('welcome')
             this.$vuetify.goTo('#wallet', { duration: 700, easing: 'easeInCubic'})
           } else {
             throw new Error('Not able to get the address ' + JSON.stringify(userInfo))
