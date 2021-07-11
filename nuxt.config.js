@@ -10,17 +10,13 @@ export default {
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: '' },
-      {
-        hid: 'twitterimage',
-        name: 'twitter:image',
-        content: 'https://lto.stakely.io/lto-description-image.jpg'
-      },
-      {
-        hid: 'ogimage',
-        property: 'og:image',
-        content: 'https://lto.stakely.io/lto-description-image.jpg'
-      },
+      { name: 'description', content: `LTO Network wallet interface for Ledger devices. Built by the Stakely.io team.` },
+      { property: 'og:title', content: `LTO Network Ledger Wallet` },
+      { property: 'og:url', content: 'https://lto.stakely.io' },
+      { property: 'og:description', content: `LTO Network wallet interface for Ledger devices. Built by the Stakely.io team.` },
+      { name: 'twitter:image', content: 'https://lto.stakely.io/lto-description-image.jpg' },
+      { property: 'og:image', content: 'https://lto.stakely.io/lto-description-image.jpg' },
+      { name: 'theme-color', content: '#637bd9' }
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
