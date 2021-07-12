@@ -324,8 +324,8 @@ import AnimatedNumber from "animated-number-vue";
         ledgerOptions: {
           debug: false,
           openTimeout: 3000,
-          listenTimeout: 30000,
-          exchangeTimeout: 30000,
+          listenTimeout: 250000,
+          exchangeTimeout: 250000,
           networkCode: 76, // 76 mainnet - 84 tesnet
           transport: TransportU2F
         },
