@@ -294,7 +294,7 @@
 const BigNumber = require('bignumber.js')
 const bs58 = require('bs58')
 
-import TransportU2F from '@ledgerhq/hw-transport-u2f';
+import TransportU2F from '@ledgerhq/hw-transport-webusb';
 import {WavesLedger} from 'lto-ledger-js-unofficial-test';
 import * as Transactions from '../scripts/transactions.js';
 import AnimatedNumber from "animated-number-vue";
