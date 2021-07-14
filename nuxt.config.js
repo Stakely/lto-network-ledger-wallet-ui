@@ -30,10 +30,11 @@ export default {
   components: true,
   buildModules: [
     '@nuxtjs/vuetify',
+    'vue-browser-detect-plugin/nuxt'
   ],
   modules: [
     '@nuxtjs/axios',
-    '@nuxtjs/pwa',
+    '@nuxtjs/pwa'
   ],
   pwa: {
     manifest: {
@@ -66,6 +67,6 @@ export default {
       background_color: "#F1F1F1",
       scope: "/",
       display: "standalone"
-    },
-  },
+    }
+  }
 }
