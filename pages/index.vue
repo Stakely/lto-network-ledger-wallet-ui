@@ -294,7 +294,8 @@
 const BigNumber = require('bignumber.js')
 const bs58 = require('bs58')
 
-import TransportU2F from '@ledgerhq/hw-transport-webusb';
+import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
+import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import {WavesLedger} from 'lto-ledger-js-unofficial-test';
 import * as Transactions from '../scripts/transactions.js';
 import AnimatedNumber from "animated-number-vue";
@@ -321,13 +322,13 @@ import AnimatedNumber from "animated-number-vue";
         total_lto: 0,
         available_lto: 0,
         ledger: null,
-        ledgerOptions: {
+        ledger_options: {
           debug: false,
           openTimeout: 3000,
           listenTimeout: 250000,
           exchangeTimeout: 250000,
           networkCode: 76, // 76 mainnet - 84 tesnet
-          transport: TransportU2F
+          transport: null
         },
         loading: {
           sign_transaction: false,
@@ -424,6 +425,12 @@ import AnimatedNumber from "animated-number-vue";
     mounted() {
       // Fetch wallet balance data every 15s
       setInterval(() => this.getBalances(), 15000)
+      // Firefox and Safari do not support WebUSB, so we use the legacy U2F
+      if (this.$browserDetect.isFirefox || this.$browserDetect.isSafari) {
+        this.ledger_options.transport = TransportU2F
+      } else {
+        this.ledger_options.transport = TransportWebUSB
+      }
     },
     methods: {
       formatTwoDecimals(value) {
@@ -432,7 +439,7 @@ import AnimatedNumber from "animated-number-vue";
       async connectLedger() {
         this.loading.connect_ledger = true
         try {
-          this.ledger = new WavesLedger(this.ledgerOptions)
+          this.ledger = new WavesLedger(this.ledger_options)
           const userInfo = await this.ledger.getUserDataById(this.lto_address_id)
 
           if (userInfo.address) {
@@ -459,10 +466,10 @@ import AnimatedNumber from "animated-number-vue";
         this.clearData()
       },
       networkChanged() {
-        if (this.ledgerOptions.networkCode === 76) {
-          this.ledgerOptions.networkCode = 84
-        } else if (this.ledgerOptions.networkCode === 84) {
-          this.ledgerOptions.networkCode = 76
+        if (this.ledger_options.networkCode === 76) {
+          this.ledger_options.networkCode = 84
+        } else if (this.ledger_options.networkCode === 84) {
+          this.ledger_options.networkCode = 76
         }
         this.connectLedger()
       },
