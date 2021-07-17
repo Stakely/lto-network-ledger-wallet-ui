@@ -119,11 +119,14 @@
         <v-col cols="12" class="px-2 mt-4">
           <div class="white default-shadow rounded pa-4">
             <v-row no-gutters class="mx-n2">
-              <v-col cols="12" md="10" class="px-2">
+              <v-col cols="12" md="8" class="px-2">
                 <div class="section-title">YOUR LEDGER ADDRESS</div>
                 <div class="mt-2 section-box-dense rounded overflow-hidden d-flex align-center justify-space-between text--secondary width-100">
                   <v-text-field readonly color="#637bd9" v-model="lto_address" dense hide-details filled :append-icon="lto_address ? (is_valid_address(lto_address) ? 'mdi-check-circle-outline' : 'mdi-close-circle-outline') : ''"></v-text-field>
                 </div>
+              </v-col>
+              <v-col cols="12" md="2" class="px-2">
+                <v-btn @click="validateAddess">Validate</v-btn>
               </v-col>
               <v-col cols="12" md="2" class="px-2 mt-4 mt-md-0">
                 <div class="section-title">ADDRESS ID</div>
@@ -440,7 +443,7 @@ import AnimatedNumber from "animated-number-vue";
         this.loading.connect_ledger = true
         try {
           this.ledger = new WavesLedger(this.ledger_options)
-          const userInfo = await this.ledger.getUserDataById(this.lto_address_id)
+          const userInfo = await this.ledger.getUserDataById(this.lto_address_id, false)
 
           if (userInfo.address) {
             this.lto_address = userInfo.address
@@ -475,6 +478,9 @@ import AnimatedNumber from "animated-number-vue";
       },
       addressIdChanged() {
         this.connectLedger()
+      },
+      validateAddess() {
+        this.ledger.getUserDataById(this.lto_address_id, true)
       },
       async signTransaction() {
         this.loading.sign_transaction = true
