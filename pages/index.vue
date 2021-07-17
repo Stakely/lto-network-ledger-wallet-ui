@@ -119,14 +119,21 @@
         <v-col cols="12" class="px-2 mt-4">
           <div class="white default-shadow rounded pa-4">
             <v-row no-gutters class="mx-n2">
-              <v-col cols="12" md="8" class="px-2">
+              <v-col cols="12" md="10" class="px-2">
                 <div class="section-title">YOUR LEDGER ADDRESS</div>
                 <div class="mt-2 section-box-dense rounded overflow-hidden d-flex align-center justify-space-between text--secondary width-100">
-                  <v-text-field readonly color="#637bd9" v-model="lto_address" dense hide-details filled :append-icon="lto_address ? (is_valid_address(lto_address) ? 'mdi-check-circle-outline' : 'mdi-close-circle-outline') : ''"></v-text-field>
+                  <v-text-field readonly color="#637bd9" v-model="lto_address" dense hide-details filled :prepend-inner-icon="lto_address ? (is_valid_address(lto_address) ? 'mdi-check-circle-outline' : 'mdi-close-circle-outline') : ''">
+                    <template v-slot:append>
+                      <div class="input-icons">
+                        <v-btn color="#637bd9" text small dense @click="validateAddess()">
+                          VALIDATE 
+                          <v-icon v-if="!loading.validate_address" right small>mdi-text-box-search-outline</v-icon>
+                          <v-progress-circular v-else indeterminate color="#637bd9" :size="10" :width="1" class="ml-3"></v-progress-circular>
+                        </v-btn>
+                      </div>
+                    </template>
+                  </v-text-field>
                 </div>
-              </v-col>
-              <v-col cols="12" md="2" class="px-2">
-                <v-btn @click="validateAddess">Validate</v-btn>
               </v-col>
               <v-col cols="12" md="2" class="px-2 mt-4 mt-md-0">
                 <div class="section-title">ADDRESS ID</div>
@@ -336,7 +343,8 @@ import AnimatedNumber from "animated-number-vue";
         loading: {
           sign_transaction: false,
           connect_ledger: false,
-          broadcast_transaction: false
+          broadcast_transaction: false,
+          validate_address: false
         },
         form_opacity: 0.3,
         alert: {
@@ -479,8 +487,10 @@ import AnimatedNumber from "animated-number-vue";
       addressIdChanged() {
         this.connectLedger()
       },
-      validateAddess() {
-        this.ledger.getUserDataById(this.lto_address_id, true)
+      async validateAddess() {
+        this.loading.validate_address = true
+        await this.ledger.getUserDataById(this.lto_address_id, true)
+        this.loading.validate_address = false
       },
       async signTransaction() {
         this.loading.sign_transaction = true
@@ -779,6 +789,9 @@ import AnimatedNumber from "animated-number-vue";
   .overflow-x-scroll {
     overflow-x: scroll;
   }
+  .input-icons {
+    margin-top: -3px
+  }
 </style>
 
 <style>
@@ -790,5 +803,9 @@ import AnimatedNumber from "animated-number-vue";
 }
 .v-expansion-panel-header {
   min-height: 0px;
+}
+.v-input__prepend-inner {
+  margin-right: 8px!important;
+  margin-top: 8px!important;
 }
 </style>
