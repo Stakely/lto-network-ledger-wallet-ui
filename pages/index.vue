@@ -191,7 +191,7 @@
             <v-row no-gutters class="mt-4">
               <v-col cols="12">
                 <v-btn @click="signTransaction()" depressed large class="float-right white--text default-color">
-                  SIGN TRANSACTION
+                  SIGN {{ transaction_selected }}
                   <v-progress-circular v-if="loading.sign_transaction" indeterminate color="white" :size="14" :width="2" class="ml-2"></v-progress-circular>
                   <v-icon v-else right small class="white--text">mdi-arrow-right</v-icon>
                 </v-btn>
