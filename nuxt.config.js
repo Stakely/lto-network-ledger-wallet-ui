@@ -22,6 +22,7 @@ export default {
     ]
   },
   css: [
+    'vuetify/dist/vuetify.css',
     'vue-json-pretty/lib/styles.css'
   ],
   plugins: [
