@@ -1,4 +1,4 @@
-## LTO Network Ledger Web interface
+## LTO Network Ledger Web User Interface
 
 #### 🎁 Built by the [Stakely.io](https://stakely.io) team
 
