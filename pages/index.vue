@@ -515,6 +515,7 @@ import AnimatedNumber from "animated-number-vue";
 
           this.json_signed_tx = {
             type: 4,
+            version: 1,
             senderPublicKey: this.lto_public_key, 
             recipient: this.to_address,
             fee: BigNumber(this.fee).multipliedBy(100000000).decimalPlaces(0).toNumber(),
@@ -550,6 +551,7 @@ import AnimatedNumber from "animated-number-vue";
 
           this.json_signed_tx = {
             type: 8,
+            version: 1,
             senderPublicKey: this.lto_public_key, 
             recipient: this.validator_address,
             fee: BigNumber(this.fee).multipliedBy(100000000).decimalPlaces(0).toNumber(),
@@ -581,6 +583,7 @@ import AnimatedNumber from "animated-number-vue";
 
           this.json_signed_tx = {
             type: 9,
+            version: 1,
             senderPublicKey: this.lto_public_key, 
             leaseId: this.lease_id,
             fee: BigNumber(this.fee).multipliedBy(100000000).decimalPlaces(0).toNumber(),
