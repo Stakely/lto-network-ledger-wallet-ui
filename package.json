@@ -22,7 +22,7 @@
     "nuxt": "^2.15.7",
     "vue-browser-detect-plugin": "^0.1.13",
     "vue-json-pretty": "^1.8.1",
-    "vuetify": "^2.5.5"
+    "vuetify": "^2.6.10"
   },
   "devDependencies": {
     "@nuxtjs/vuetify": "^1.12.1"
